@@ -1,0 +1,6 @@
+aiogram==3.7.0
+asyncpg==0.29.0
+python-dotenv==1.0.0
+apscheduler==3.10.4
+timezonefinder==6.5.0
+pytz==2024.1
