@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .  # собираем образ из Dockerfile в текущей папке
+    restart: always  # перезапускать если упал
+    env_file: .env  # берём переменные из .env
+    depends_on:
+      db:
+        condition: service_healthy  # ждём пока БД не будет готова
+
+  db:
+    image: postgres:16  # официальный образ PostgreSQL
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}        # имя базы данных
+      POSTGRES_USER: ${DB_USER}      # пользователь
+      POSTGRES_PASSWORD: ${DB_PASSWORD}  # пароль
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # данные сохраняются между перезапусками
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql  # создаём таблицы при первом запуске
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]  # проверяем что БД готова
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"  # пробрасываем порт чтобы можно было подключиться локально
+
+volumes:
+  postgres_data:  # именованный volume для хранения данных БД
