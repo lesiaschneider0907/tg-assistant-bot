@@ -6,7 +6,7 @@ from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 import os
 
-from bot.handlers import start
+from bot.handlers import start, calendar
 
 load_dotenv()  # загружает переменные из .env файла
 
@@ -32,6 +32,7 @@ async def main():
     dp = Dispatcher()  # диспетчер — маршрутизирует сообщения к нужным хендлерам
 
     dp.include_router(start.router)  # подключаем роутер с хендлерами /start
+    dp.include_router(calendar.router)
 
     await init_db()  # инициализируем пул подключений к БД
     logger.info("Bot started")
